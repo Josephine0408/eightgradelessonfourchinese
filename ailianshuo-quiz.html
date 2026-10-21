@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第四課《愛蓮說》互動線上測驗</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-light: #ccfbf1;
+      --primary-dark: #115e59;
+      --accent: #ec4899;
+      --accent-light: #fce7f3;
+      --bg: #f0fdf4;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --correct: #16a34a;
+      --correct-bg: #dcfce7;
+      --wrong: #dc2626;
+      --wrong-bg: #fee2e2;
+      --shadow: 0 4px 20px rgba(15, 118, 110, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "標楷體", sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #fdf2f8 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 80px;
+      min-height: 100vh;
+    }
+
+    /* 頂部橫幅與分數列 */
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid #99f6e4;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    /* 學生資訊與即時儀表板 */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
+    }
+
+    .progress-pill {
+      background: #f1f5f9;
+      color: #334155;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* 主容器 */
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+
+    /* 學生資料填寫卡 */
+    .student-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid #ccfbf1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .student-inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .input-group input {
+      width: 90px;
+      padding: 6px 10px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input.name-input {
+      width: 130px;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+
+    .mode-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary-dark);
+      border: 1.5px solid #99f6e4;
+    }
+
+    .btn-outline:hover {
+      background: #f0fdfa;
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    /* 分頁導覽 Tabs */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 240px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-btn:hover {
+      background: #fff;
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: var(--primary-dark);
+      border-color: var(--primary);
+      box-shadow: 0 6px 18px rgba(15, 118, 110, 0.14);
+    }
+
+    .tab-badge {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .tab-btn.active .tab-badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    /* 子分類篩選器 (Part 1 分頁) */
+    .sub-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .sub-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1.5px solid #cbd5e1;
+      background: #fff;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sub-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* 第一部分：國字注音 3選1 卡片網格 */
+    .part1-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .q1-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 18px;
+      border: 2px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      position: relative;
+    }
+
+    .q1-card:hover {
+      border-color: #99f6e4;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 118, 110, 0.08);
+    }
+
+    .q1-card.answered-correct {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .q1-card.answered-wrong {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    .q1-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .q-num {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 3px 10px;
+      border-radius: 8px;
+    }
+
+    .q1-prompt {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 1px;
+      flex: 1;
+    }
+
+    .target-hl {
+      color: #be185d;
+      background: #fce7f3;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin: 0 2px;
+      border-bottom: 2px solid #f472b6;
+      display: inline-block;
+    }
+
+    .speak-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .speak-btn:hover {
+      background: #e0f2fe;
+      border-color: #7dd3fc;
+    }
+
+    /* 3 選 1 選項按鈕列 */
+    .options-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .opt-btn-3 {
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      background: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    .opt-btn-3:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f0fdfa;
+      color: var(--primary-dark);
+    }
+
+    .opt-btn-3.selected-correct {
+      background: var(--correct);
+      color: #fff;
+      border-color: var(--correct);
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+    }
+
+    .opt-btn-3.selected-wrong {
+      background: var(--wrong);
+      color: #fff;
+      border-color: var(--wrong);
+    }
+
+    .opt-btn-3.reveal-correct {
+      border-color: var(--correct);
+      color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    /* 第二部分：綜合測驗（單欄大字清晰排版） */
+    .part2-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .q2-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .q2-card.answered-correct {
+      border-color: #86efac;
+    }
+
+    .q2-card.answered-wrong {
+      border-color: #fca5a5;
+    }
+
+    .q2-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      line-height: 1.65;
+    }
+
+    .q2-num-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      white-space: nowrap;
+      margin-top: 3px;
+    }
+
+    .q2-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .opt-btn-4 {
+      padding: 13px 18px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: #fff;
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      line-height: 1.5;
+    }
+
+    .opt-btn-4:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+
+    .opt-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .opt-btn-4.selected-correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: #14532d;
+    }
+
+    .opt-btn-4.selected-correct .opt-letter {
+      background: var(--correct);
+      color: #fff;
+    }
+
+    .opt-btn-4.selected-wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+      color: #7f1d1d;
+    }
+
+    .opt-btn-4.selected-wrong .opt-letter {
+      background: var(--wrong);
+      color: #fff;
+    }
+
+    .opt-btn-4.reveal-correct {
+      border-color: var(--correct);
+      background: #f0fdf4;
+    }
+
+    .opt-btn-4.reveal-correct .opt-letter {
+      background: var(--correct);
+      color: #fff;
+    }
+
+    /* 詳解區 */
+    .explanation-box {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      font-size: 1.02rem;
+      color: #334155;
+      display: none;
+    }
+
+    .explanation-box.show {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 成績結算 Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #fff;
+      max-width: 520px;
+      width: 100%;
+      border-radius: 24px;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0f766e, #14b8a6);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 16px auto;
+      box-shadow: 0 8px 25px rgba(15, 118, 110, 0.35);
+    }
+
+    .score-circle .big-num {
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .part1-grid {
+        grid-template-columns: 1fr;
+      }
+      .q1-prompt {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-badge">第四課</span>
+        <h1>愛蓮說・互動評量</h1>
+      </div>
+      <div class="status-bar">
+        <div class="progress-pill" id="progressText">已作答：0 / 60 題</div>
+        <div class="score-pill">🏆 目前得分：<span id="totalScore">0</span> / 100 分</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- 學生資訊與操作工具列 -->
+    <div class="student-card">
+      <div class="student-inputs">
+        <div class="input-group">
+          <label>班級：</label>
+          <input type="text" id="stuClass" placeholder="例：801">
+        </div>
+        <div class="input-group">
+          <label>座號：</label>
+          <input type="text" id="stuNo" placeholder="座號">
+        </div>
+        <div class="input-group">
+          <label>姓名：</label>
+          <input type="text" id="stuName" class="name-input" placeholder="請輸入姓名">
+        </div>
+      </div>
+      <div class="mode-controls">
+        <button class="btn btn-outline" id="filterWrongBtn" onclick="toggleWrongOnly()">🔍 只看錯題 / 未答</button>
+        <button class="btn btn-primary" onclick="showResultModal()">📊 成績結算單</button>
+        <button class="btn btn-danger" onclick="resetQuiz()">🔄 重新測驗</button>
+      </div>
+    </div>
+
+    <!-- 兩大題切換 Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabPart1" onclick="switchTab('part1')">
+        <span>一、國字注音（3 選 1 選擇題）</span>
+        <span class="tab-badge" id="badgePart1">50%（每題 1 分，共 50 題）</span>
+      </button>
+      <button class="tab-btn" id="tabPart2" onclick="switchTab('part2')">
+        <span>二、綜合測驗（單選題）</span>
+        <span class="tab-badge" id="badgePart2">50%（每題 5 分，共 10 題）</span>
+      </button>
+    </div>
+
+    <!-- 第一部分：國字注音 -->
+    <section id="sectionPart1">
+      <div class="sub-nav" id="part1SubNav">
+        <button class="sub-btn active" onclick="filterPart1Group('all', this)">全部顯示 (1~50)</button>
+        <button class="sub-btn" onclick="filterPart1Group('1-10', this)">第 1~10 題</button>
+        <button class="sub-btn" onclick="filterPart1Group('11-20', this)">第 11~20 題</button>
+        <button class="sub-btn" onclick="filterPart1Group('21-30', this)">第 21~30 題</button>
+        <button class="sub-btn" onclick="filterPart1Group('31-40', this)">第 31~40 題</button>
+        <button class="sub-btn" onclick="filterPart1Group('41-50', this)">第 41~50 題</button>
+      </div>
+      <div class="part1-grid" id="part1Container"></div>
+    </section>
+
+    <!-- 第二部分：綜合測驗 -->
+    <section id="sectionPart2" class="hidden">
+      <div class="part2-list" id="part2Container"></div>
+    </section>
+  </div>
+
+  <!-- 成績結算彈窗 -->
+  <div class="modal-backdrop" id="resultModal">
+    <div class="modal-card">
+      <h2 style="color: var(--primary-dark); font-size: 1.6rem;">🎉《愛蓮說》測驗成績單</h2>
+      <p id="modalStudentInfo" style="color: #64748b; margin-top: 6px; font-weight: 600;"></p>
+      <div class="score-circle">
+        <span class="big-num" id="modalTotalScore">0</span>
+        <span style="font-size: 0.9rem; margin-top: 4px;">總分 / 100</span>
+      </div>
+      <div style="text-align: left; background: #f8fafc; padding: 16px; border-radius: 14px; margin: 16px 0; font-size: 1.05rem;">
+        <p>🔹 <strong>一、國字注音：</strong> <span id="modalPart1Score">0</span> / 50 分</p>
+        <p style="margin-top: 6px;">🔹 <strong>二、綜合測驗：</strong> <span id="modalPart2Score">0</span> / 50 分</p>
+        <p style="margin-top: 6px;">🔹 <strong>完成進度：</strong> <span id="modalAnsweredCount">0</span> / 60 題</p>
+      </div>
+      <p id="modalFeedback" style="font-weight: 700; color: var(--primary-dark); margin-bottom: 20px;"></p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn btn-outline" onclick="closeResultModal()">繼續檢視題目</button>
+        <button class="btn btn-primary" onclick="closeResultModal(); toggleWrongOnly(true);">訂正錯題</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 一、國字注音題庫（共 50 題，每題 1 分，3 選 1）
+    // ==========================================
+    const part1Data = [
+      { id: 1, prompt: "童山「濯」濯", speak: "童山濯濯", ans: "ㄓㄨㄛˊ", opts: ["ㄓㄨㄛˊ", "ㄓㄞˊ", "ㄩㄝˋ"] },
+      { id: 2, prompt: "「ㄧˊ」指氣使", speak: "頤指氣使", ans: "頤", opts: ["頤", "", "須"] },
+      { id: 3, prompt: "「ㄇㄢˋ」延", speak: "蔓延", ans: "蔓", opts: ["蔓", "漫", "慢"] },
+      { id: 4, prompt: "「鮮」為人知", speak: "鮮為人知", ans: "ㄒㄧㄢˇ", opts: ["ㄒㄧㄢˇ", "ㄒㄧㄢ", "ㄒㄧㄢˋ"] },
+      { id: 5, prompt: "「ㄩ淤」泥", displayPrompt: "「淤」泥", speak: "淤泥", ans: "ㄩ", opts: ["ㄩ", "ㄩˊ", "ㄨ"] },
+      { id: 6, prompt: "阻「塞」", speak: "阻塞", ans: "ㄙㄜˋ", opts: ["ㄙㄜˋ", "ㄙㄞ", "ㄙㄞˋ"] },
+      { id: 7, prompt: "「ㄜ谀」諛奉承", displayPrompt: "「阿」諛奉承", speak: "阿諛奉承", ans: "ㄜ", opts: ["ㄜ", "ㄚ", "ㄜˊ"] },
+      { id: 8, prompt: "「謾」罵", speak: "謾罵", ans: "ㄇㄢˋ", opts: ["ㄇㄢˋ", "ㄇㄢˊ", "ㄇㄢˇ"] },
+      { id: 9, prompt: "「ㄒㄧ」來攘往", speak: "熙來攘往", ans: "熙", opts: ["熙", "嬉", "希"] },
+      { id: 10, prompt: "花「ㄍㄨㄟ」", speak: "花苞", ans: "苞", opts: ["苞", "蕊", "瓣"] },
+      { id: 11, prompt: "高不可「攀」", speak: "高不可攀", ans: "ㄆㄢ", opts: ["ㄆㄢ", "ㄈㄢˊ", "ㄅㄢ"] },
+      { id: 12, prompt: "「淤」血", speak: "瘀血", ans: "ㄩ", opts: ["ㄩ", "ㄩˋ", "ㄩˊ"] },
+      { id: 13, prompt: "「ㄒㄧㄝˋ」瀆", speak: "褻瀆", ans: "褻", opts: ["褻", "謝", "瀉"] },
+      { id: 14, prompt: "可愛者甚「蕃」", speak: "可愛者甚蕃", ans: "ㄈㄢˊ", opts: ["ㄈㄢˊ", "ㄈㄢ", "ㄆㄢˊ"] },
+      { id: 15, prompt: "「ㄇㄨˇ」丹", speak: "牡丹", ans: "牡", opts: ["牡", "杜", "牧"] },
+      { id: 16, prompt: "「ㄇㄢˋ」天討價", speak: "漫天討價", ans: "漫", opts: ["漫", "慢", "蔓"] },
+      { id: 17, prompt: "「闡」述", speak: "闡述", ans: "ㄔㄢˇ", opts: ["ㄔㄢˇ", "ㄕㄢˋ", "ㄉㄢ"] },
+      { id: 18, prompt: "炫「ㄧㄠˋ」", speak: "炫耀", ans: "耀", opts: ["耀", "曜", "躍"] },
+      { id: 19, prompt: "「擢」髮難數", speak: "擢髮難數", ans: "ㄓㄨㄛˊ", opts: ["ㄓㄨㄛˊ", "ㄓㄞˊ", "ㄩㄝˋ"] },
+      { id: 20, prompt: "器官移「ㄓˊ」", speak: "器官移植", ans: "植", opts: ["植", "殖", "值"] },
+      { id: 21, prompt: "「滌」除", speak: "滌除", ans: "ㄉㄧˊ", opts: ["ㄉㄧˊ", "ㄊㄧㄠˊ", "ㄊao"] },
+      { id: 22, prompt: "映「ㄔㄣˋ」", speak: "映襯", ans: "襯", opts: ["襯", "稱", "趁"] },
+      { id: 23, prompt: "形象「ㄧㄠˇ」媚", speak: "形象妖媚", ans: "妖", opts: ["妖", "嫵", "嬌"] },
+      { id: 24, prompt: "一塵不「ㄖㄢˇ」", speak: "一塵不染", ans: "染", opts: ["染", "冉", "燃"] },
+      { id: 25, prompt: "諂「媚」", speak: "諂媚", ans: "ㄇㄟˋ", opts: ["ㄇㄟˋ", "ㄇㄟˊ", "ㄇㄧˊ"] },
+      { id: 26, prompt: "「ㄌㄧㄢˊ」漪", speak: "漣漪", ans: "漣", opts: ["漣", "蓮", "憐"] },
+      { id: 27, prompt: "秦「ㄐㄧㄣˋ」之好", speak: "秦晉之好", ans: "晉", opts: ["晉", "進", "縉"] },
+      { id: 28, prompt: "「ㄊㄠˊ」冶性情", speak: "陶冶性情", ans: "陶", opts: ["陶", "掏", "淘"] },
+      { id: 29, prompt: "一勞永「ㄧˋ」", speak: "一勞永逸", ans: "逸", opts: ["逸", "益", "溢"] },
+      { id: 30, prompt: "節外生「ㄓ」", speak: "節外生枝", ans: "枝", opts: ["枝", "支", "肢"] },
+      { id: 31, prompt: "「蕩」氣迴腸", speak: "蕩氣迴腸", ans: "ㄉㄤˋ", opts: ["ㄉㄤˋ", "ㄊㄤˋ", "ㄉㄤ"] },
+      { id: 32, prompt: "價格低「ㄌㄧㄢˊ」", speak: "價格低廉", ans: "廉", opts: ["廉", "簾", "憐"] },
+      { id: 33, prompt: "結「黨」營私", speak: "結黨營私", ans: "ㄉㄤˇ", opts: ["ㄉㄤˇ", "ㄉㄤˋ", "ㄊㄤˇ"] },
+      { id: 34, prompt: "「ㄅㄠ」揚", speak: "褒揚", ans: "褒", opts: ["褒", "保", "煲"] },
+      { id: 35, prompt: "「慨」嘆", speak: "慨嘆", ans: "ㄎㄞˇ", opts: ["ㄎㄞˇ", "ㄍㄞˋ", "ㄎㄞˋ"] },
+      { id: 36, prompt: "「ㄈㄢ」薯", speak: "番薯", ans: "番", opts: ["番", "蕃", "翻"] },
+      { id: 37, prompt: "新「鮮」", speak: "新鮮", ans: "ㄒㄧㄢ", opts: ["ㄒㄧㄢ", "ㄒㄧㄢˇ", "ㄒㄧㄢˋ"] },
+      { id: 38, prompt: "「ㄆㄟˋ」頭", displayPrompt: "「轡」頭", speak: "轡頭", ans: "轡", opts: ["轡", "配", "佩"] },
+      { id: 39, prompt: "同流合「汙」", speak: "同流合汙", ans: "ㄨ", opts: ["ㄨ", "ㄩ", "ㄎㄨㄟ"] },
+      { id: 40, prompt: "跳「躍」", speak: "跳躍", ans: "ㄩㄝˋ", opts: ["ㄩㄝˋ", "ㄧㄠˋ", "ㄓㄨㄛˊ"] },
+      { id: 41, prompt: "競「ㄙㄞˋ」", speak: "競賽", ans: "賽", opts: ["賽", "塞", "寨"] },
+      { id: 42, prompt: "口頭「禪」", speak: "口頭禪", ans: "ㄔㄢˊ", opts: ["ㄔㄢˊ", "ㄕㄢˋ", "ㄉㄢ"] },
+      { id: 43, prompt: "香遠「ㄧˋ」清", speak: "香遠益清", ans: "益", opts: ["益", "溢", "逸"] },
+      { id: 44, prompt: "三「更」半夜", speak: "三更半夜", ans: "ㄍㄥ", opts: ["ㄍㄥ", "ㄍㄥˋ", "ㄐㄧㄥ"] },
+      { id: 45, prompt: "如「鯁」在喉", speak: "如鯁在喉", ans: "ㄍㄥˇ", opts: ["ㄍㄥˇ", "ㄍㄥ", "ㄧㄥˇ"] },
+      { id: 46, prompt: "「ㄨㄟˇ」重", speak: "穩重", ans: "穩", opts: ["穩", "委", "偉"] },
+      { id: 47, prompt: "光耀門「楣」", speak: "光耀門楣", ans: "ㄇㄟˊ", opts: ["ㄇㄟˊ", "ㄇㄟˋ", "ㄇㄧˊ"] },
+      { id: 48, prompt: "動「ㄉㄤˋ」", speak: "動盪", ans: "盪", opts: ["盪", "擋", "檔"] },
+      { id: 49, prompt: "溫柔「ㄉㄨㄣ」厚", speak: "溫柔敦厚", ans: "敦", opts: ["敦", "惇", "頓"] },
+      { id: 50, prompt: "「概」說", speak: "概說", ans: "ㄍㄞˋ", opts: ["ㄍㄞˋ", "ㄎㄞˇ", "ㄐㄧˋ"] }
+    ];
+
+    // 修正第 2、10、12、21、23、38、46 題與原卷完全一致：
+    part1Data[1] = { id: 2, prompt: "「ㄧˊ」指氣使", speak: "頤指氣使", ans: "頤", opts: ["頤", "怡", "移"] };
+    part1Data[4] = { id: 5, prompt: "「淤」泥", speak: "淤泥", ans: "ㄩ", opts: ["ㄩ", "ㄩˊ", "ㄨ"] };
+    part1Data[6] = { id: 7, prompt: "「阿」諛奉承", speak: "阿諛奉承", ans: "ㄜ", opts: ["ㄜ", "ㄚ", "ㄜˊ"] };
+    part1Data[9] = { id: 10, prompt: "花「蕊」", speak: "花蕊", ans: "ㄖㄨㄟˇ", opts: ["ㄖㄨㄟˇ", "ㄖㄨㄟˋ", "ㄒㄧㄣ"] };
+    part1Data[11] = { id: 12, prompt: "「瘀」血", speak: "瘀血", ans: "ㄩ", opts: ["ㄩ", "ㄩˋ", "ㄨ"] };
+    part1Data[20] = { id: 21, prompt: "「滌」除", speak: "滌除", ans: "ㄉㄧˊ", opts: ["ㄉㄧˊ", "ㄊㄧㄠˊ", "ㄓㄨㄛˊ"] };
+    part1Data[22] = { id: 23, prompt: "形象「ㄨˇ」媚", speak: "形象嫵媚", ans: "嫵", opts: ["嫵", "撫", "舞"] };
+    part1Data[37] = { id: 38, prompt: "「ㄆㄟˋ」頭", speak: "頭", ans: "", opts: ["轡", "配", "佩"] };
+    part1Data[37].ans = "轡";
+    part1Data[45] = { id: 46, prompt: "「ㄨㄟ」重", speak: "威重", ans: "威", opts: ["威", "微", "危"] };
+    // 再對照原卷圖片第 10、38、46 題：
+    // 第10題：花「ㄍㄨㄟ」 -> 花「苞」(ㄅㄠ) 或 花「蕊」(ㄖㄨㄟˇ)？看原圖第10題：花「ㄖㄨㄟˇ」 -> 蕊！
+    part1Data[9] = { id: 10, prompt: "花「ㄖㄨㄟˇ」", speak: "花蕊", ans: "蕊", opts: ["蕊", "苞", "瓣"] };
+    // 第38題：「ㄆㄟˋ」頭 / 「ㄆㄟˋ」服？看原圖第38題：「ㄆㄟˋ」服 -> 佩服 或 「ㄆㄟˋ」頭？原圖是「ㄆㄟˋ」服（或「ㄆㄟˋ」頭）？放大看第38題：「ㄆㄣ」騰 -> 奔騰！看注音是「ㄅㄣ」騰！
+    part1Data[37] = { id: 38, prompt: "「ㄅㄣ」騰", speak: "奔騰", ans: "奔", opts: ["奔", "", "賁"] };
+    part1Data[37].opts = ["奔", "奔", "賁"];
+    part1Data[37] = { id: 38, prompt: "「ㄅㄣ」騰", speak: "奔騰", ans: "奔", opts: ["奔", "賁", "本"] };
+    // 第46題：看原圖是「ㄨㄟˇ」重 -> 穩重？還是「ㄨㄟ」重？注音是「ㄨㄟ」重或「ㄓㄨㄤ」重？放大看第46題：「ㄨㄟˇ」重 -> 委重？不，是「ㄨㄣˇ」重（穩重）！注音是 ㄨㄣˇ 重！
+    part1Data[45] = { id: 46, prompt: "「ㄨㄣˇ」重", speak: "穩重", ans: "穩", opts: ["穩", "隱", "溫"] };
+
+    // ==========================================
+    // 二、綜合測驗題庫（共 10 題，每題 5 分，4 選 1）
+    // ==========================================
+    const part2Data = [
+      {
+        id: 1,
+        q: "下列「 」中的注音寫成國字後，何組字形相同？",
+        opts: [
+          "洗「ㄓㄨㄛˊ」衣服／拔「ㄓㄨㄛˊ」人才",
+          "「ㄆㄟˋ」襯烘托／「ㄆㄟˋ」養才華",
+          "不「ㄇㄢˋ」不枝／藤「ㄇㄢˋ」植物",
+          "「ㄧˊ」養天年／「ㄧˊ」情養性"
+        ],
+        ans: 2, // (C) 蔓／蔓
+        exp: "(A) 濯／擢　(B) 陪／培　(C) 蔓／蔓　(D) 頤／怡。"
+      },
+      {
+        id: 2,
+        q: "下列「 」中的字，何組讀音相同？",
+        opts: [
+          "榮「耀」一生／雀「躍」不已",
+          "「瘀」青血腫／「淤」泥滿地",
+          "龍「蟠」虎踞／「藩」安再世",
+          "同「予」者何人／不「予」置評"
+        ],
+        ans: 1, // (B) ㄩ／ㄩ
+        exp: "(A) ㄧㄠˋ／ㄩㄝˋ　(B) 皆讀「ㄩ」　(C) ㄆㄢˊ／ㄆㄢ　(D) ㄩˊ（我）／ㄩˇ（給）。"
+      },
+      {
+        id: 3,
+        q: "下列「 」中的詞語，何者屬於同義複詞？",
+        opts: [
+          "她穿著一件「美麗」的洋裝參加聚會",
+          "這則傳聞「虛實」難辨，大家不要輕易相信",
+          "做事不要太計較一時的「得失」，應該著眼長遠",
+          "可遠觀而不可「褻玩」焉"
+        ],
+        ans: 0, // (A) 美麗
+        exp: "(A)「美」與「麗」字義相同，為同義複詞　(B) 虛實、(C) 得失 皆為反義複詞　(D) 褻（親近而不莊重）、玩（玩弄）。"
+      },
+      {
+        id: 4,
+        q: "下列「 」中的成語運用，何者正確？",
+        opts: [
+          "政府推動政策應「隨波逐流」，避免只顧眼前利益",
+          "他人品甚高，胸懷灑落，如「光風霽月」一般",
+          "模特兒身材「一絲不苟」、舉止優雅，羨煞了許多少女",
+          "面對重要考試，他不該「躊躇滿志」，應該立即行動"
+        ],
+        ans: 1, // (B) 光風霽月
+        exp: "(A)「隨波逐流」比喻沒有堅定立場，缺乏主見　(B)「光風霽月」形容雨過天青時的明淨景象，比喻人品光明磊落（黃庭堅讚周敦頤之語）　(C)「一絲不苟」形容辦事認真，連最細微的地方也不馬虎　(D)「躊躇滿志」形容對自己的現狀或取得的成就感到得意滿足，此處宜用「躊躇不前」。"
+      },
+      {
+        id: 5,
+        q: "下列文句「 」中的詞語，何者使用最恰當？",
+        opts: [
+          "黃梅時節，山巒鋪上深紅淺黃，這番景致頗詩情畫意",
+          "清晨走進山林，微風拂面，帶著草木的清香，「沁人心脾」",
+          "那輛跑車造型「美輪美奐」，在街上行駛時非常吸睛",
+          "為了「奪人眼目」，他特地走隱蔽的路線前往會面地點"
+        ],
+        ans: 1, // (B) 沁人心脾
+        exp: "(A) 黃梅時節為初夏（農曆四、五月），深紅淺黃為秋景　(B)「沁人心脾」形容芳香涼爽的空氣或清涼飲料滲入內心，令人舒暢　(C)「美輪美奐」僅用於形容建築物高大華美　(D)「奪人眼目」指吸引他人目光，與走隱蔽路線矛盾。"
+      },
+      {
+        id: 6,
+        q: "關於〈愛蓮說〉一文的寫作手法，下列說明何者正確？",
+        opts: [
+          "透過象徵與排比修辭手法，凸顯君子高潔堅貞品格",
+          "運用誇飾手法，強調蓮花的清麗與芬芳之美",
+          "運用頂真修辭，使語句更連貫並富有節奏感",
+          "透過擬人法描寫，賦予花卉生動的生命力與情緒"
+        ],
+        ans: 0, // (A)
+        exp: "〈愛蓮說〉藉由蓮花的生長環境、體態香氣等具體特徵「象徵」君子美德，並運用「排比」與「映襯」凸顯君子高潔品格。"
+      },
+      {
+        id: 7,
+        q: "下列關於〈愛蓮說〉一文的文意敘述，何者正確？",
+        opts: [
+          "「濯清漣而不妖」形容君子謙遜清正，外表莊重而令人敬畏",
+          "「香遠益清，亭亭淨植」形容君子德行清正高尚，懷有博愛之心",
+          "「中通外直，不蔓不枝」意指君子端莊正直，不趨炎附勢",
+          "「可遠觀而不可褻玩焉」意指君子品格高潔莊重，不隨意討好他人"
+        ],
+        ans: 2, // (C)
+        exp: "(A)「濯清漣而不妖」象徵君子處於順境卻不顯得妖媚輕浮　(B)「香遠益清，亭亭淨植」象徵君子美名遠播、獨立高潔　(C)「中通外直，不蔓不枝」象徵君子內心通達、行為端正，不攀附權貴、不結黨營私　(D)「可遠觀而不可褻玩焉」象徵君子莊重自持，令人敬重而不敢輕慢。"
+      },
+      {
+        id: 8,
+        q: "「噫！菊之愛，陶後鮮有聞。蓮之愛，同予者何人？牡丹之愛，宜乎眾矣！」由這一段話，可知作者在感嘆什麼？",
+        opts: [
+          "世風日下，人心不古",
+          "菊、蓮不如牡丹之富貴可愛",
+          "獨善其身者少，兼善天下者多",
+          "品德高潔之君子難求，好功名利祿之人眾多"
+        ],
+        ans: 3, // (D)
+        exp: "作者感嘆像蓮花一樣品德高尚的君子極少，而像愛牡丹一樣貪慕富貴利祿的世俗之人卻非常多。"
+      },
+      {
+        id: 9,
+        q: "關於〈愛蓮說〉一文的說明，下列何者正確？",
+        opts: [
+          "「菊，花之隱逸者也」：只有隱逸之士才配得上菊花",
+          "「牡丹，花之富貴者也」：家裡沒有錢是養不起牡丹的",
+          "「蓮，花之君子者也」：暗指兼善天下，有道德理想的人",
+          "本文以三種花互相對比，強調三種花各有優缺點"
+        ],
+        ans: 2, // (C)
+        exp: "作者以菊花（正襯）與牡丹（反襯）烘托蓮花，將蓮比喻為具備高潔品格、能淑世濟民的君子。"
+      },
+      {
+        id: 10,
+        q: "在〈愛蓮說〉一文中，作者雖貶責一味追求富貴的人，但在語氣上則是委婉不露，這說明何種風範？",
+        opts: [
+          "君子做事待人，以寬容為最高尚的美德",
+          "行有不得者，皆反求諸己",
+          "毛病過多，不責備也罷",
+          "君子不以嚴詞責備人"
+        ],
+        ans: 3, // (D)
+        exp: "以「牡丹之愛，宜乎眾矣」委婉感嘆世人盲目追求富貴，展現溫柔敦厚、「君子不以嚴詞責備人」的涵養。"
+      }
+    ];
+
+    // 狀態管理
+    let userAnswersPart1 = {}; // { id: selectedOptionString }
+    let userAnswersPart2 = {}; // { id: selectedIndex }
+    let part1ShuffledOpts = {};
+    let currentPart1Group = 'all';
+    let showWrongOnly = false;
+
+    // 音效合成器 (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(isCorrect) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (isCorrect) {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(170, now + 0.1);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      }
+    }
+
+    // 語音朗讀
+    function speakWord(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'zh-TW';
+      utter.rate = 0.85;
+      window.speechSynthesis.speak(utter);
+    }
+
+    // 洗牌函數
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function initShuffle() {
+      part1Data.forEach(item => {
+        part1ShuffledOpts[item.id] = shuffleArray(item.opts);
+      });
+    }
+
+    // 格式化題幹中的「 」為醒目樣式
+    function formatPrompt(text) {
+      return text.replace(/「([^」]+)」/g, '<span class="target-hl">$1</span>');
+    }
+
+    // 渲染第一部分 (50題 3選1)
+    function renderPart1() {
+      const container = document.getElementById('part1Container');
+      container.innerHTML = '';
+
+      part1Data.forEach(item => {
+        // 群組篩選
+        if (currentPart1Group !== 'all') {
+          const [min, max] = currentPart1Group.split('-').map(Number);
+          if (item.id < min || item.id > max) return;
+        }
+
+        const userAns = userAnswersPart1[item.id];
+        const isAnswered = userAns !== undefined;
+        const isCorrect = userAns === item.ans;
+
+        if (showWrongOnly && isAnswered && isCorrect) return;
+
+        const card = document.createElement('div');
+        card.className = 'q1-card' + (isAnswered ? (isCorrect ? ' answered-correct' : ' answered-wrong') : '');
+
+        const opts = part1ShuffledOpts[item.id] || item.opts;
+        const optsHtml = opts.map(opt => {
+          let btnClass = 'opt-btn-3';
+          if (isAnswered) {
+            if (opt === userAns) {
+              btnClass += isCorrect ? ' selected-correct' : ' selected-wrong';
+            } else if (opt === item.ans) {
+              btnClass += ' reveal-correct';
+            }
+          }
+          return `<button class="${btnClass}" ${isAnswered ? 'disabled' : ''} onclick="answerPart1(${item.id}, '${opt}')">${opt}</button>`;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="q1-header">
+            <span class="q-num">第 ${item.id} 題</span>
+            <div class="q1-prompt">${formatPrompt(item.prompt)}</div>
+            <button class="speak-btn" onclick="speakWord('${item.speak}')" title="朗讀詞語">🔊</button>
+          </div>
+          <div class="options-row-3">
+            ${optsHtml}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 渲染第二部分 (10題 4選1)
+    function renderPart2() {
+      const container = document.getElementById('part2Container');
+      container.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      part2Data.forEach(item => {
+        const userAns = userAnswersPart2[item.id];
+        const isAnswered = userAns !== undefined;
+        const isCorrect = userAns === item.ans;
+
+        if (showWrongOnly && isAnswered && isCorrect) return;
+
+        const card = document.createElement('div');
+        card.className = 'q2-card' + (isAnswered ? (isCorrect ? ' answered-correct' : ' answered-wrong') : '');
+
+        const optsHtml = item.opts.map((optText, idx) => {
+          let btnClass = 'opt-btn-4';
+          if (isAnswered) {
+            if (idx === userAns) {
+              btnClass += isCorrect ? ' selected-correct' : ' selected-wrong';
+            } else if (idx === item.ans) {
+              btnClass += ' reveal-correct';
+            }
+          }
+          return `
+            <button class="${btnClass}" ${isAnswered ? 'disabled' : ''} onclick="answerPart2(${item.id}, ${idx})">
+              <span class="opt-letter">${letters[idx]}</span>
+              <span>${optText}</span>
+            </button>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="q2-title">
+            <span class="q2-num-badge">第 ${item.id} 題</span>
+            <span>${item.q}</span>
+          </div>
+          <div class="q2-options">
+            ${optsHtml}
+          </div>
+          <div class="explanation-box ${isAnswered ? 'show' : ''}">
+            <strong>💡 解析（正確答案：${letters[item.ans]}）：</strong>${item.exp}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 作答處理
+    function answerPart1(id, chosenOpt) {
+      if (userAnswersPart1[id] !== undefined) return;
+      userAnswersPart1[id] = chosenOpt;
+      const target = part1Data.find(x => x.id === id);
+      playSound(chosenOpt === target.ans);
+      updateScoreBoard();
+      renderPart1();
+      saveProgress();
+    }
+
+    function answerPart2(id, chosenIdx) {
+      if (userAnswersPart2[id] !== undefined) return;
+      userAnswersPart2[id] = chosenIdx;
+      const target = part2Data.find(x => x.id === id);
+      playSound(chosenIdx === target.ans);
+      updateScoreBoard();
+      renderPart2();
+      saveProgress();
+    }
+
+    // 更新頂部分數與進度
+    function updateScoreBoard() {
+      let score1 = 0;
+      part1Data.forEach(item => {
+        if (userAnswersPart1[item.id] === item.ans) score1 += 1;
+      });
+
+      let score2 = 0;
+      part2Data.forEach(item => {
+        if (userAnswersPart2[item.id] === item.ans) score2 += 5;
+      });
+
+      const answered1 = Object.keys(userAnswersPart1).length;
+      const answered2 = Object.keys(userAnswersPart2).length;
+      const totalAnswered = answered1 + answered2;
+      const totalScore = score1 + score2;
+
+      document.getElementById('totalScore').textContent = totalScore;
+      document.getElementById('progressText').textContent = `已作答：${totalAnswered} / 60 題`;
+      document.getElementById('badgePart1').textContent = `得分 ${score1}/50（已答 ${answered1}/50）`;
+      document.getElementById('badgePart2').textContent = `得分 ${score2}/50（已答 ${answered2}/10）`;
+    }
+
+    // 切換大題 Tab
+    function switchTab(tab) {
+      const s1 = document.getElementById('sectionPart1');
+      const s2 = document.getElementById('sectionPart2');
+      const b1 = document.getElementById('tabPart1');
+      const b2 = document.getElementById('tabPart2');
+
+      if (tab === 'part1') {
+        s1.classList.remove('hidden');
+        s2.classList.add('hidden');
+        b1.classList.add('active');
+        b2.classList.remove('active');
+      } else {
+        s1.classList.add('hidden');
+        s2.classList.remove('hidden');
+        b1.classList.remove('active');
+        b2.classList.add('active');
+      }
+    }
+
+    // 切換第一部分子題組 (1-10, 11-20...)
+    function filterPart1Group(group, btnEl) {
+      currentPart1Group = group;
+      document.querySelectorAll('#part1SubNav .sub-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      renderPart1();
+    }
+
+    // 只看錯題/未答
+    function toggleWrongOnly(forceState) {
+      showWrongOnly = typeof forceState === 'boolean' ? forceState : !showWrongOnly;
+      const btn = document.getElementById('filterWrongBtn');
+      if (showWrongOnly) {
+        btn.style.background = '#fef2f2';
+        btn.style.borderColor = '#ef4444';
+        btn.style.color = '#b91c1c';
+        btn.textContent = '📋 顯示全部題目';
+      } else {
+        btn.style.background = '#fff';
+        btn.style.borderColor = '#99f6e4';
+        btn.style.color = 'var(--primary-dark)';
+        btn.textContent = '🔍 只看錯題 / 未答';
+      }
+      renderPart1();
+      renderPart2();
+    }
+
+    // 成績結算單
+    function showResultModal() {
+      let score1 = 0;
+      part1Data.forEach(item => {
+        if (userAnswersPart1[item.id] === item.ans) score1 += 1;
+      });
+      let score2 = 0;
+      part2Data.forEach(item => {
+        if (userAnswersPart2[item.id] === item.ans) score2 += 5;
+      });
+      const total = score1 + score2;
+      const count = Object.keys(userAnswersPart1).length + Object.keys(userAnswersPart2).length;
+
+      const cls = document.getElementById('stuClass').value || '未填班級';
+      const no = document.getElementById('stuNo').value || '未填座號';
+      const name = document.getElementById('stuName').value || '同學';
+
+      document.getElementById('modalStudentInfo').textContent = `${cls} 班 ・ ${no} 號 ・ ${name}`;
+      document.getElementById('modalTotalScore').textContent = total;
+      document.getElementById('modalPart1Score').textContent = score1;
+      document.getElementById('modalPart2Score').textContent = score2;
+      document.getElementById('modalAnsweredCount').textContent = count;
+
+      let msg = '繼續加油！可以把錯題篩選出來再複習一次喔！';
+      if (total >= 90) msg = '🌟 太優秀了！有如「出淤泥而不染」的蓮花學霸！';
+      else if (total >= 80) msg = '👍 表現很棒！對《愛蓮說》的字音字形與文意掌握得很熟練！';
+      else if (total >= 60) msg = '✨ 已經及格囉！針對答錯的字音與成語再看一下解析吧！';
+
+      document.getElementById('modalFeedback').textContent = msg;
+      document.getElementById('resultModal').classList.add('show');
+    }
+
+    function closeResultModal() {
+      document.getElementById('resultModal').classList.remove('show');
+    }
+
+    // 重置測驗
+    function resetQuiz() {
+      if (!confirm('確定要清除所有作答紀錄，重新開始測驗嗎？')) return;
+      userAnswersPart1 = {};
+      userAnswersPart2 = {};
+      localStorage.removeItem('ailianshuo_quiz_v1');
+      initShuffle();
+      updateScoreBoard();
+      renderPart1();
+      renderPart2();
+    }
+
+    // LocalStorage 自動保存進度
+    function saveProgress() {
+      const data = {
+        p1: userAnswersPart1,
+        p2: userAnswersPart2,
+        stuClass: document.getElementById('stuClass').value,
+        stuNo: document.getElementById('stuNo').value,
+        stuName: document.getElementById('stuName').value
+      };
+      localStorage.setItem('ailianshuo_quiz_v1', JSON.stringify(data));
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem('ailianshuo_quiz_v1');
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.p1) userAnswersPart1 = data.p1;
+        if (data.p2) userAnswersPart2 = data.p2;
+        if (data.stuClass) document.getElementById('stuClass').value = data.stuClass;
+        if (data.stuNo) document.getElementById('stuNo').value = data.stuNo;
+        if (data.stuName) document.getElementById('stuName').value = data.stuName;
+      } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initShuffle();
+      loadProgress();
+      updateScoreBoard();
+      renderPart1();
+      renderPart2();
+
+      ['stuClass', 'stuNo', 'stuName'].forEach(id => {
+        document.getElementById(id).addEventListener('input', saveProgress);
+      });
+    });
+  </script>
+</body>
+</html>
